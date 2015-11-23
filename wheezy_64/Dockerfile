@@ -1,0 +1,31 @@
+FROM kinsamanka/mkdocker:latest
+MAINTAINER GP Orcullo <kinsamanka@gmail.com>
+
+# build x86_64 under /opt
+RUN     cd /opt && \
+        debootstrap --foreign --no-check-gpg --include=ca-certificates \
+            --arch=amd64 wheezy rootfs http://httpredir.debian.org/debian && \
+        proot -r /opt/rootfs /debootstrap/debootstrap --second-stage --verbose
+
+# configure apt
+RUN	sh -c 'echo "deb http://httpredir.debian.org/debian wheezy main" \
+	    > /opt/rootfs/etc/apt/sources.list' && \
+	sh -c 'echo "deb http://httpredir.debian.org/debian wheezy-updates \
+	    main" >> /opt/rootfs/etc/apt/sources.list' && \
+	sh -c 'echo "deb http://security.debian.org wheezy/updates main" \
+	    >> /opt/rootfs/etc/apt/sources.list' && \
+	sh -c 'echo "deb http://httpredir.debian.org/debian wheezy-backports \
+ 	    main" >> /opt/rootfs/etc/apt/sources.list' && \
+	proot -r /opt/rootfs apt-get update 
+
+# install dependencies
+ADD	install_dependencies.sh /opt/rootfs/tmp/
+RUN	proot -r /opt/rootfs /tmp/install_dependencies.sh
+
+# cleanup apt
+RUN	proot -r /opt/rootfs apt-get clean
+
+# fix resolv.conf
+RUN	sh -c 'echo "nameserver 8.8.8.8" > /opt/rootfs/etc/resolv.conf' && \
+	sh -c 'echo "nameserver 8.8.4.4" >>/opt/rootfs/etc/resolv.conf'
+
