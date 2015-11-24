@@ -20,7 +20,7 @@ apt-get install -y --no-install-recommends \
 # install machinekit build depends
 apt-get install -y -t wheezy-backports cython
 
-deps=`cat mk_depends`
+deps=`cat wheezy_mk_depends`
 deps="${deps%
 }"
 

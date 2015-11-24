@@ -22,11 +22,12 @@ RUN	sh -c 'echo "deb http://httpredir.debian.org/debian ${SUITE} main" \
 	proot -r /opt/rootfs apt-get update 
 
 # install dependencies
-ADD	https://raw.githubusercontent.com/kinsamanka/MkDocker/master/Dockerfile/${SUITE}_mk_depends \
-	https://raw.githubusercontent.com/kinsamanka/MkDocker/master/Dockerfile/install_${SUITE}_deps.sh \
+ADD	https://raw.githubusercontent.com/kinsamanka/MkDocker/master/${SUITE}_mk_depends \
+	https://raw.githubusercontent.com/kinsamanka/MkDocker/master/install_${SUITE}_deps.sh \
 	/opt/rootfs/tmp/
 	
-RUN	proot -r /opt/rootfs /tmp/install_${SUITE}_deps.sh && \
+RUN	chmod a+x /opt/rootfs/tmp/install_${SUITE}_deps.sh && \
+	proot -r /opt/rootfs /tmp/install_${SUITE}_deps.sh && \
 	rm /opt/rootfs/tmp/*
 
 # cleanup apt
