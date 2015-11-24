@@ -1,26 +1,33 @@
 FROM kinsamanka/mkdocker:latest
 MAINTAINER GP Orcullo <kinsamanka@gmail.com>
 
-# build x86_64 under /opt
+ENV SUITE wheezy
+ENV ARCH amd64
+
+# build under /opt
 RUN     cd /opt && \
         debootstrap --foreign --no-check-gpg --include=ca-certificates \
-            --arch=amd64 wheezy rootfs http://httpredir.debian.org/debian && \
+            --arch=${ARCH} ${SUITE} rootfs http://httpredir.debian.org/debian && \
         proot -r /opt/rootfs /debootstrap/debootstrap --second-stage --verbose
 
 # configure apt
-RUN	sh -c 'echo "deb http://httpredir.debian.org/debian wheezy main" \
+RUN	sh -c 'echo "deb http://httpredir.debian.org/debian ${SUITE} main" \
 	    > /opt/rootfs/etc/apt/sources.list' && \
-	sh -c 'echo "deb http://httpredir.debian.org/debian wheezy-updates \
+	sh -c 'echo "deb http://httpredir.debian.org/debian ${SUITE}-updates \
 	    main" >> /opt/rootfs/etc/apt/sources.list' && \
-	sh -c 'echo "deb http://security.debian.org wheezy/updates main" \
+	sh -c 'echo "deb http://security.debian.org ${SUITE}/updates main" \
 	    >> /opt/rootfs/etc/apt/sources.list' && \
-	sh -c 'echo "deb http://httpredir.debian.org/debian wheezy-backports \
+	sh -c 'echo "deb http://httpredir.debian.org/debian ${SUITE}-backports \
  	    main" >> /opt/rootfs/etc/apt/sources.list' && \
 	proot -r /opt/rootfs apt-get update 
 
 # install dependencies
-ADD	install_dependencies.sh /opt/rootfs/tmp/
-RUN	proot -r /opt/rootfs /tmp/install_dependencies.sh
+ADD	https://raw.githubusercontent.com/kinsamanka/MkDocker/master/Dockerfile/${SUITE}_mk_depends \
+	https://raw.githubusercontent.com/kinsamanka/MkDocker/master/Dockerfile/install_${SUITE}_deps.sh \
+	/opt/rootfs/tmp/
+	
+RUN	proot -r /opt/rootfs /tmp/install_${SUITE}_deps.sh && \
+	rm /opt/rootfs/tmp/*
 
 # cleanup apt
 RUN	proot -r /opt/rootfs apt-get clean
@@ -28,4 +35,3 @@ RUN	proot -r /opt/rootfs apt-get clean
 # fix resolv.conf
 RUN	sh -c 'echo "nameserver 8.8.8.8" > /opt/rootfs/etc/resolv.conf' && \
 	sh -c 'echo "nameserver 8.8.4.4" >>/opt/rootfs/etc/resolv.conf'
-
