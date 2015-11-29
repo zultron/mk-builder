@@ -3,7 +3,7 @@ MAINTAINER GP Orcullo <kinsamanka@gmail.com>
 
 # install required dependencies
 RUN	apt-get update && \
-	apt-get upgrade && \
+	apt-get -y upgrade && \
 	apt-get -y --no-install-recommends install \
 	    debootstrap \
 	    proot
