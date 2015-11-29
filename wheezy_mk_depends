@@ -43,6 +43,7 @@ python
 python-avahi
 python-dev
 python-netifaces
+python-nose
 python-protobuf
 python-pyftpdlib
 python-setuptools
