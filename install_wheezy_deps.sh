@@ -15,7 +15,8 @@ apt-get install -y --no-install-recommends \
 	fakeroot \
 	equivs \
 	lsb-release \
-	less
+	less \
+	python-debian
 
 # install machinekit build depends
 apt-get install -y -t wheezy-backports cython
