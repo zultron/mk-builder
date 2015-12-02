@@ -8,7 +8,8 @@ RUN	apt-get update && \
 	    debootstrap \
 	    proot \
 	    locales \
-	    rubygems
+	    rubygems \
+	    git
 
 # Set the locale
 RUN	locale-gen en_US.UTF-8  
