@@ -9,7 +9,8 @@ RUN	apt-get update && \
 	    proot \
 	    locales \
 	    rubygems \
-	    git
+	    git \
+	    bzip2
 
 # Set the locale
 RUN	locale-gen en_US.UTF-8  
