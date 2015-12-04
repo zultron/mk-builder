@@ -1,0 +1,25 @@
+sftp:
+  container_name: mk_sftp_server
+  build: sftp
+  ports:
+    - "9022:22"
+  volumes:
+    - ./shared:/home/foo/shared
+    - ./ssh_keys/id_rsa.pub:/home/mktravis/.ssh/keys/id_rsa.pub:ro
+  command: mktravis::1001
+
+web:
+  container_name: mk_web_server
+  image: nginx
+  ports:
+    - "9080:80"
+    - "9443:443"
+  volumes:
+    - ./www:/usr/share/nginx/html:ro
+    - ./nginx_config/nginx.conf:/etc/nginx/nginx.conf:ro
+    - ./nginx_config/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+reprepro:
+  container_name: mk_reprepro
+  build: reprepro
+
