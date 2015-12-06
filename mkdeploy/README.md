@@ -46,4 +46,35 @@ Add ssh pubkeys to `~/aptrepo/.ssh/authorized_keys`.
 
 # APT repo initialization
 
-Not yet implemented
+The APT repo will be initialized in `~/aptrepo/repo`.
+
+If GPG signing keys already exist, create the directory
+`~/aptrepo/gnupg` and place the signing keys there.  Otherwise, new
+keys will be generated at `./run.sh init`.  Do not create a passphrase
+or signatures cannot run automatically.
+
+Edit `get-ppa.sh`:
+
+- Update `CODENAMES`
+- Update `UPDATES[<codename>]` for each distro; the words in these
+  strings refer to `reprepro` update configurations in
+  `reprepro-templates/tmpl.updates-<word>`
+- Update the `reprepro` configurations in the `reprepro-templates`
+  directory
+  - `tmpl.updates-*` configure `reprepro` to mirror other APT
+    repositories
+  - `tmpl.distributions` configures `reprepro` to build the
+    destination APT repository
+
+# APT repo management
+
+The repo is initialized when the container is initialied, and the
+container will periodically run updates.  Mostly there should be no
+maintenance.
+
+Some utilities are available for dumping the package signing key,
+listing packages, etc.  Run `./run.sh repo` for usage.  For example,
+to list packages in the `wheezy` distro:
+
+	./run.sh repo -c wheezy -l
+

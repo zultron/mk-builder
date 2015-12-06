@@ -16,6 +16,11 @@ RUN		apt-get install -y libfile-fcntllock-perl
 # Install supervisord
 RUN		apt-get install -y supervisor
 
+# Install rsyslog, esp. for ssh logging
+RUN		apt-get install -y rsyslog
+RUN		sed -i -e 's,/var/log/.*,/opt/aptrepo/log/syslog,' \
+		    /etc/rsyslog.conf
+
 # Set up ssh daemon
 RUN		apt-get install -y ssh && \
 		    mkdir /var/run/sshd && \
@@ -30,18 +35,12 @@ RUN		sed -i -e 's,/var/www/html,/opt/aptrepo/repo,' \
 		    /etc/apache2/sites-available/000-default.conf
 
 # Install repo tools
-RUN		apt-get install -y reprepro
+RUN		apt-get install -y reprepro apt-transport-https ca-certificates
 
 # APT repo in /opt/aptrepo
 VOLUME		/opt/aptrepo
 RUN		adduser --home /opt/aptrepo --disabled-password \
 		    --gecos "APT repo" --no-create-home aptrepo
-
-# FIXME relocate
-# Install rsyslog, esp. for ssh logging
-RUN		apt-get install -y rsyslog
-RUN		sed -i -e 's,/var/log/.*,/opt/aptrepo/log/syslog,' \
-		    /etc/rsyslog.conf
 
 # Env var:  inside container
 ENV		MKDOCKER_CONTAINER 1

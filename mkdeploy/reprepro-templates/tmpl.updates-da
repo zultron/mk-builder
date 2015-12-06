@@ -1,0 +1,13 @@
+#								-*-conf-*-
+#
+# Pull Machinekit Buildbot packages for @CODENAME@
+#
+Name: da
+Method: http://deb-old.dovetail-automata.com
+Suite: @CODENAME@
+Components: main
+Architectures: amd64 i386 armhf source
+VerifyRelease: blindtrust
+DownloadListsAs: .gz
+GetInRelease: no
+
