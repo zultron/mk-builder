@@ -1,0 +1,47 @@
+#								-*-conf-*-
+####################################################
+# Machinekit package updates
+#
+# FIXME Old Buildbot packages for jessie (machinekit pkgs only)
+Name: da-old
+Method: http://deb-old.dovetail-automata.com
+Suite: jessie
+Components: main
+Architectures: amd64 i386 armhf source
+VerifyRelease: blindtrust
+DownloadListsAs: .gz
+GetInRelease: no
+FilterFormula: package (== machinekit) | Source (== machinekit)
+
+# Packagecloud
+Name: packagecloud
+Method: https://packagecloud.io/zultron/machinekit/debian
+Suite: wheezy
+# Translate base component to main
+Components: main
+Architectures: amd64 i386 armhf source
+VerifyRelease: blindtrust
+DownloadListsAs: .gz
+GetInRelease: no
+
+####################################################
+#Machinekit deps from dxsbuild
+#
+Name: da-mkdeps-jessie
+Method: http://buildbot.dovetail-automata.com/mkdeps-repo
+Suite: jessie
+Components: main
+Architectures: amd64 i386 armhf source
+VerifyRelease: blindtrust
+DownloadListsAs: .gz
+GetInRelease: no
+
+Name: da-mkdeps-wheezy
+Method: http://buildbot.dovetail-automata.com/mkdeps-repo
+Suite: wheezy
+Components: main
+Architectures: amd64 i386 armhf source
+VerifyRelease: blindtrust
+DownloadListsAs: .gz
+GetInRelease: no
+

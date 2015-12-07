@@ -1,5 +1,10 @@
 #!/bin/bash -e
 
+# Repo configuration
+CODENAMES="wheezy jessie"
+WHEEZY_MANUAL_UPDATES="da-mkdeps-wheezy"
+JESSIE_MANUAL_UPDATES="da-mkdeps-jessie"
+
 ####################################################
 # Utility functions
 
@@ -19,10 +24,10 @@ usage() {
     set +x
     test -z "$1" || msg "$1"
     msg "Usage:"
-    msg "    $0 -c [ CODENAME | all ] [ -d ] [ -m ] \\"
+    msg "    $0 [ -c CODENAME ] [ -d ] [ -m ] \\"
     msg "	[ -u | -U | -l | -i | -r REPREPO ARGS... ]"
     msg "    $0 -k"
-    msg "	-c  CODENAME (wheezy, jessie, etc.) or 'all'"
+    msg "	-c  CODENAME (wheezy, jessie, etc.)"
     msg "	-d  enable debug output"
     msg "	-m  run manual updates"
     msg "	-u  check for updates"
@@ -58,14 +63,7 @@ TEMPLATEDIR=${SCRIPTSDIR}/reprepro-templates
 # Where the data lives
 BASEDIR=/opt/aptrepo
 REPODIR=${BASEDIR}/repo
-
-# Repo configuration
-declare -A UPDATES
-declare -A MANUAL_UPDATES
-
-CODENAMES="wheezy jessie"
-UPDATES[wheezy]="packagecloud da"
-UPDATES[jessie]="da"
+CONFIGDIR=$REPODIR/conf
 
 # gpg keys
 GNUPGHOME=$BASEDIR/gnupg
@@ -107,36 +105,25 @@ shift $((OPTIND-1))
 run-reprepro() {
     # reprepro command
     REPREPRO="reprepro $REPREPRO_VERBOSE $GPG_ARG -b $REPODIR \
-	--confdir +b/conf-$CODENAME --dbdir +b/db-$CODENAME"
+	--confdir +b/conf --dbdir +b/db"
     debugmsg running:  ${REPREPRO} $*
     ${REPREPRO} "$@"
 }
 
-init-codename() {
-    # check -c option is valid
-    test -n "$CODENAME" || usage "No codename specified"
-    test "$CODENAMES" != "${CODENAMES/${CODENAME}}" || \
-	usage "Valid codenames are:  ${CODENAMES}"
-    debugmsg "Validated codename:  ${CODENAME}"
-
-    # List of updates for this run
-    ALL_UPDATES="${UPDATES[$CODENAME]}"
-    ${RUN_MANUAL_UPDATES} && ALL_UPDATES+=" ${MANUAL_UPDATES[$CODENAME]}"
-    debugmsg "Updates for this run:  $ALL_UPDATES"
-
-    # Expand input template file names
-    UPDATES_TEMPLATES=$(for u in $ALL_UPDATES; do \
-	echo -n "tmpl.updates-$u "; done)
-
-    # Set config dir
-    CONFIGDIR=$REPODIR/conf-${CODENAME}
-    debugmsg "Archive configuration directory: ${CONFIGDIR}"
-
+init() {
     # Create any missing directories
     if ! test -f $CONFIGDIR; then
 	debugmsg "Creating configuration directory $CONFIGDIR"
 	mkdir -p $CONFIGDIR
     fi
+}
+
+check-codename() {
+    # check -c option is valid
+    test -n "$CODENAME" || usage "No codename specified"
+    test "$CODENAMES" != "${CODENAMES/${CODENAME}}" || \
+	usage "Valid codenames are:  ${CODENAMES}"
+    debugmsg "Validated codename:  ${CODENAME}"
 }
 
 gpg-fingerprint() {
@@ -160,37 +147,27 @@ lock() {
 ####################################################
 # render templates
 
-# generic config file rendering
-render_configfile() {
-    local DST_CONFIG=$CONFIGDIR/$1; shift
-    local SRC_CONFIGS="$*"
-    debugmsg "Rendering config file:  ${DST_CONFIG}"
-    debugmsg "    from source templates:  ${SRC_CONFIGS}"
-
-    # clean out DST_CONFIG for appending
-    echo -e "#\t\t\t\t\t\t\t\t-*-conf-*-" > $DST_CONFIG
-
-    # render each SRC_CONFIG and append to DST_CONFIG
-    for SRC_CONFIG in $SRC_CONFIGS; do
-	sed -n $TEMPLATEDIR/$SRC_CONFIG \
-	    -e "s,@CODENAME@,${CODENAME},g" \
-	    -e "s,@UPDATES@,${ALL_UPDATES},g" \
-	    -e "s,@PACKAGE_SIGNING_KEY@,$(gpg-fingerprint),g" \
-	    -e '2,$p' \
-	    >> $DST_CONFIG
-	# test -n "$DEBUG" || { echo -e "\n${DST_CONFIG}:"; cat $DST_CONFIG; }
-    done
-}
-
 # set up distributions and updates files
 render_archive_config() {
-    debugmsg "Rendering archive configuration with replacements:"
-    debugmsg "    CODENAME -> ${CODENAME}"
-    debugmsg "    MK_BUILDBOT_REPO -> ${MK_BUILDBOT_REPO}"
-    debugmsg "    MK_DEPS_REPO -> ${MK_DEPS_REPO}"
+    local CONFIG
+    for CONFIG in distributions updates; do
+	local DST_CONFIG=$CONFIGDIR/$CONFIG
+	local SRC_CONFIG=tmpl.$CONFIG
+	debugmsg "Rendering config file:  ${DST_CONFIG}"
+	debugmsg "    from source template:  ${SRC_CONFIG}"
 
-    render_configfile distributions tmpl.distributions
-    render_configfile updates $UPDATES_TEMPLATES
+	if ! ${RUN_MANUAL_UPDATES}; then
+	    JESSIE_MANUAL_UPDATES=''
+	    WHEEZY_MANUAL_UPDATES=''
+	fi
+
+	# render SRC_CONFIG into DST_CONFIG
+	sed $TEMPLATEDIR/$SRC_CONFIG \
+	    -e "s,@WHEEZY_MANUAL_UPDATES@,${WHEEZY_MANUAL_UPDATES},g" \
+	    -e "s,@JESSIE_MANUAL_UPDATES@,${JESSIE_MANUAL_UPDATES},g" \
+	    -e "s,@PACKAGE_SIGNING_KEY@,$(gpg-fingerprint),g" \
+	    > $DST_CONFIG
+    done
 }
 
 ####################################################
@@ -198,7 +175,9 @@ render_archive_config() {
 
 # List Debian archive
 list-archive() {
-    run-reprepro -C main list $CODENAME
+    for c in ${CODENAME:-${CODENAMES}}; do
+	run-reprepro -C main list $c
+    done
 }
 
 # Testing:  see what updates would be pulled
@@ -216,24 +195,10 @@ update() {
 ####################################################
 # Main program
 
-if test "$COMMAND" = print_gpg_key; then
-    print_gpg_key; exit
-fi
-
-# if CODENAME = all, rerun ourselves for each codename
-if test "$CODENAME" = all; then
-    for CODENAME in $CODENAMES; do
-	debugmsg "\nRe-running for codename $CODENAME"
-	$0 ${ORIG_ARGS/ all/ $CODENAME}
-    done
-elif test -n "$COMMAND"; then
+if test -n "$COMMAND"; then
     if ${INIT}; then
 	lock
-	init-codename
-	if test -z "${ALL_UPDATES}"; then
-	    msg "No repos configured for update; exiting"
-	    exit 0
-	fi
+	init
     fi    
     $COMMAND "$@"
 else

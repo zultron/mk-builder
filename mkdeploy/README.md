@@ -53,28 +53,29 @@ If GPG signing keys already exist, create the directory
 keys will be generated at `./run.sh init`.  Do not create a passphrase
 or signatures cannot run automatically.
 
-Edit `get-ppa.sh`:
-
-- Update `CODENAMES`
-- Update `UPDATES[<codename>]` for each distro; the words in these
-  strings refer to `reprepro` update configurations in
-  `reprepro-templates/tmpl.updates-<word>`
-- Update the `reprepro` configurations in the `reprepro-templates`
-  directory
-  - `tmpl.updates-*` configure `reprepro` to mirror other APT
-    repositories
-  - `tmpl.distributions` configures `reprepro` to build the
-    destination APT repository
+Edit the files in `reprepro-templates`, and edit the top of
+`get-ppa.sh`.  See the `reprepro(1)` man-page for details.  The
+strings like `@WHEEZY_MANUAL_UPDATES@` will be replaced with the
+corresponding shell variables when the manual update argument is
+supplied, as in `./run.sh repo -m`.
 
 # APT repo management
 
-The repo is initialized when the container is initialied, and the
+The repo is initialized when the container is initialized, and the
 container will periodically run updates.  Mostly there should be no
 maintenance.
 
 Some utilities are available for dumping the package signing key,
-listing packages, etc.  Run `./run.sh repo` for usage.  For example,
-to list packages in the `wheezy` distro:
+listing packages, etc.  Run `./run.sh repo` for usage.  Example:
 
-	./run.sh repo -c wheezy -l
+List packages in the `wheezy` distro:
 
+    ./run.sh repo -c wheezy -l
+
+List updates not yet pulled into the repo:
+
+    ./run.sh repo -u
+
+Pull all updates into repo, including "manual" updates:
+
+    ./run.sh repo -m -U
