@@ -31,8 +31,7 @@ EXPOSE		22
 RUN		apt-get install -y apache2
 EXPOSE		80
 RUN		sed -i -e 's,/var/log/.*,/opt/aptrepo/log,' /etc/apache2/envvars
-RUN		sed -i -e 's,/var/www/html,/opt/aptrepo/repo,' \
-		    /etc/apache2/sites-available/000-default.conf
+COPY		apache2.conf /etc/apache2/sites-available/000-default.conf
 
 # Install repo tools
 RUN		apt-get install -y reprepro apt-transport-https ca-certificates
