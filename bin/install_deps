@@ -1,0 +1,36 @@
+#!/bin/sh -ex
+
+SUITE=$1
+
+# add dovetail repo
+apt-key adv --keyserver hkp://keys.gnupg.net --recv-key 73571BB9
+echo "deb http://builder2.zultron.com wheezy main" \
+	> /etc/apt/sources.list.d/machinekit.list
+apt-get update
+
+# install requisite packages
+apt-get install -y --no-install-recommends \
+	git \
+	devscripts \
+	fakeroot \
+	equivs \
+	lsb-release \
+	less \
+	python-debian
+
+# install machinekit build depends
+if test $SUITE = wheezy; then
+    apt-get install -y -t wheezy-backports cython
+    TCL_VER=8.5
+else
+    apt-get install -y --no-install-recommends cython
+    TCL_VER=8.6
+fi
+
+sed /tmp/mk_depends \
+    -e "s/@TCL_VER@/${TCL_VER}/" \
+    | xargs apt-get install -y --no-install-recommends
+
+if test $ARCH != armhf; then
+    apt-get install -y --no-install-recommends libxenomai-dev
+fi

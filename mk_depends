@@ -30,10 +30,9 @@ liburiparser-dev
 libusb-1.0-0-dev
 libwebsockets-dev
 libxaw7-dev
-libxenomai-dev
 libxmu-dev
 libxmu-headers
-libzmq4-dev
+libzmq3-dev
 openssl
 pkg-config
 procps
@@ -51,7 +50,7 @@ python-simplejson
 python-support
 python-tk
 python-zmq
-tcl8.6-dev
-tk8.6-dev
+tcl@TCL_VER@-dev
+tk@TCL_VER@-dev
 uuid-dev
 uuid-runtime
