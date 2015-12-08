@@ -59,6 +59,9 @@ strings like `@WHEEZY_MANUAL_UPDATES@` will be replaced with the
 corresponding shell variables when the manual update argument is
 supplied, as in `./run.sh repo -m`.
 
+Set up a cron job similar to that in `crontab` to run periodically and
+pull updates.
+
 # APT repo management
 
 The repo is initialized when the container is initialized, and the

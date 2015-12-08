@@ -74,6 +74,7 @@ init() {
 
 	# Create log directory for supervisord, rsyslogd, apache2
 	mkdir -p /opt/aptrepo/log
+	chown aptrepo:aptrepo /opt/aptrepo/log
 
 	# Set up SSH keys
 	if ! test -d /opt/aptrepo/.ssh; then
@@ -99,10 +100,9 @@ init() {
 }
 
 repo() {
-    set -x
     if test "${MKDOCKER_CONTAINER}" != 1; then
 	# Outiside container; re-run inside
-	docker run -it --rm \
+	docker run --rm \
 	    -v ${TOPDIR}:/opt/mkdocker \
 	    -v ${REPODIR}:/opt/aptrepo \
 	    -v ${GPGDIR}:/opt/aptrepo-keys \

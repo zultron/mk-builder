@@ -189,6 +189,7 @@ checkupdates() {
 # Pull updates
 update() {
     render_archive_config
+    echo "Updating archive at $(date -R)" 1>&2
     run-reprepro --noskipold update $CODENAME
 }
 
