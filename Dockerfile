@@ -33,8 +33,8 @@ ADD	bin/* ${ROOTFS}/usr/bin/
 
 # These variables configure the build.  Don't move them higher in the
 # file to take as much advantage of Docker's caching as possible.
-ENV SUITE wheezy
-ENV ARCH armhf
+ENV SUITE jessie
+ENV ARCH amd64
 
 # FIXME testing
 RUN	env
