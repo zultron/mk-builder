@@ -21,7 +21,7 @@ run() {
     else
 	docker run \
 	    -d \
-	    -v ${TOPDIR}:/opt/mkdocker \
+	    -v ${TOPDIR}:/opt/mkdocker:ro \
 	    -v ${REPODIR}:/opt/aptrepo \
 	    -p 2222:22 \
 	    -p 80:80 \
@@ -62,7 +62,7 @@ init() {
     if test "${MKDOCKER_CONTAINER}" != 1; then
 	# Run outside of container
 	docker run -it --rm \
-	    -v ${TOPDIR}:/opt/mkdocker \
+	    -v ${TOPDIR}:/opt/mkdocker:ro \
 	    -v ${REPODIR}:/opt/aptrepo \
 	    -v ${GPGDIR}:/opt/aptrepo-keys \
 	    ${IMAGE} /opt/mkdocker/mkdeploy/run.sh init
@@ -103,9 +103,9 @@ repo() {
     if test "${MKDOCKER_CONTAINER}" != 1; then
 	# Outiside container; re-run inside
 	docker run --rm \
-	    -v ${TOPDIR}:/opt/mkdocker \
+	    -v ${TOPDIR}:/opt/mkdocker:ro \
 	    -v ${REPODIR}:/opt/aptrepo \
-	    -v ${GPGDIR}:/opt/aptrepo-keys \
+	    -v ${GPGDIR}:/opt/aptrepo-keys:ro \
 	    -u aptrepo:aptrepo \
 	    ${IMAGE} /opt/mkdocker/mkdeploy/run.sh repo "$@"
     else
