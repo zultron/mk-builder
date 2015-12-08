@@ -5,6 +5,7 @@ DEPLOYDIR=${TOPDIR}/mkdeploy
 cd "$TOPDIR"
 
 REPODIR=~/aptrepo
+GPGDIR=~/aptrepo-keys
 IMAGE=mkdeploy
 CONTAINER=mkdeploy
 CMD=$1; shift || true
@@ -25,8 +26,8 @@ run() {
 	    -p 2222:22 \
 	    -p 80:80 \
 	    --name=${CONTAINER} \
+	    --restart=always \
 	    ${IMAGE}
-    #	--restart=always \
     fi
 
 }
@@ -63,6 +64,7 @@ init() {
 	docker run -it --rm \
 	    -v ${TOPDIR}:/opt/mkdocker \
 	    -v ${REPODIR}:/opt/aptrepo \
+	    -v ${GPGDIR}:/opt/aptrepo-keys \
 	    ${IMAGE} /opt/mkdocker/mkdeploy/run.sh init
     else
 	# Run inside container
@@ -82,12 +84,11 @@ init() {
 	fi
 
 	# Set up GNUPGHOME
-	if ! test -f /opt/aptrepo/gnupg/secring.gpg; then
-	    install -d -o aptrepo -g aptrepo -m 700 /opt/aptrepo/gnupg
-	    env GNUPGHOME=/opt/aptrepo/gnupg gpg --gen-key
+	chmod 700 /opt/aptrepo-keys
+	if ! test -f /opt/aptrepo-keys/secring.gpg; then
+	    env GNUPGHOME=/opt/aptrepo-keys gpg --gen-key
 	fi
-	chmod 700 /opt/aptrepo/gnupg
-	chown -R aptrepo:aptrepo /opt/aptrepo/gnupg
+	chown -R aptrepo:aptrepo /opt/aptrepo-keys
 
 	# Set up repo directory
 	if ! test -d /opt/aptrepo/repo; then
@@ -100,14 +101,15 @@ init() {
 repo() {
     set -x
     if test "${MKDOCKER_CONTAINER}" != 1; then
-	# Run outside of container
+	# Outiside container; re-run inside
 	docker run -it --rm \
 	    -v ${TOPDIR}:/opt/mkdocker \
 	    -v ${REPODIR}:/opt/aptrepo \
+	    -v ${GPGDIR}:/opt/aptrepo-keys \
 	    -u aptrepo:aptrepo \
 	    ${IMAGE} /opt/mkdocker/mkdeploy/run.sh repo "$@"
     else
-	# Run inside container
+	# Inside container
 	${DEPLOYDIR}/get-ppa.sh "$@"
     fi
 }

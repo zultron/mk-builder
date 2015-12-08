@@ -66,7 +66,7 @@ REPODIR=${BASEDIR}/repo
 CONFIGDIR=$REPODIR/conf
 
 # gpg keys
-GNUPGHOME=$BASEDIR/gnupg
+GNUPGHOME=/opt/aptrepo-keys
 
 # GPG handling
 if test -n "$GNUPGHOME"; then
