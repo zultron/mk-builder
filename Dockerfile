@@ -1,6 +1,8 @@
 FROM debian:jessie
 MAINTAINER GP Orcullo <kinsamanka@gmail.com>
 
+ENV	TERM dumb
+
 # install required dependencies
 RUN	apt-get update && \
 	apt-get -y upgrade && \
