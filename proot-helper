@@ -4,6 +4,6 @@ test $ARCH = armhf \
     && QEMU_CMD="-q qemu-arm-static" \
     || QEMU_CMD=""
 
-PROOT="proot -R $ROOTFS $QEMU_CMD"
+PROOT="proot -r $ROOTFS $QEMU_CMD"
 
 exec $PROOT "$@"
