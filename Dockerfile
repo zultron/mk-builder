@@ -86,10 +86,11 @@ RUN	proot-helper apt-get update && \
 	    python-debian
 
 # install MK dependencies
-ADD	mk_depends ${ROOTFS}/tmp/
+ADD	mk_depends /tmp/
 	# mk_depends lists deps independent of $SUITE and $ARCH
 RUN	xargs -a /tmp/mk_depends proot-helper \
-	    apt-get install -y --no-install-recommends
+	    apt-get install -y --no-install-recommends && \
+	rm /tmp/mk_depends
 	# cython package is in backports on Wheezy
 RUN	test $SUITE = wheezy \
 	    && proot-helper apt-get install -y -t wheezy-backports cython \
