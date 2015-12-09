@@ -87,19 +87,19 @@ RUN	proot-helper apt-get update && \
 
 # install MK dependencies
 ADD	mk_depends ${ROOTFS}/tmp/
+	# mk_depends lists deps independent of $SUITE and $ARCH
 RUN	xargs -a /tmp/mk_depends proot-helper \
-	    apt-get install -y --no-install-recommends && \
-	( test $SUITE = wheezy \
-	    && ( \
-		proot-helper apt-get install -y -t wheezy-backports cython && \
-		proot-helper apt-get install -y --no-install-recommends \
-		    tcl8.5-dev tk8.5-dev; ) \
-	    || proot-helper apt-get install -y --no-install-recommends cython \
+	    apt-get install -y --no-install-recommends
+	# cython package is in backports on Wheezy
+RUN	test $SUITE = wheezy \
+	    && proot-helper apt-get install -y -t wheezy-backports cython \
+	    || proot-helper apt-get install -y --no-install-recommends cython
+	# tcl/tk latest is v. 8.5 in Wheezy
+RUN	test $SUITE = wheezy \
+	    && proot-helper apt-get install -y --no-install-recommends \
+		    tcl8.5-dev tk8.5-dev \
+	    || proot-helper apt-get install -y --no-install-recommends \
 	            tcl8.6-dev tk8.6-dev; \
-	) && \
-	( test $ARCH = armhf || proot-helper \
-	      apt-get install -y --no-install-recommends libxenomai-dev; ) && \
-	rm ${ROOTFS}/tmp/*
 
 # cleanup apt
 RUN	proot-helper apt-get clean
