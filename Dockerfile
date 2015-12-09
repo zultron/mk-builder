@@ -95,7 +95,7 @@ RUN	xargs -a /tmp/mk_depends proot-helper \
 		proot-helper apt-get install -y --no-install-recommends \
 		    tcl8.5-dev tk8.5-dev; ) \
 	    || proot-helper apt-get install -y --no-install-recommends cython \
-	            tcl8.5-dev tk8.5-dev; \
+	            tcl8.6-dev tk8.6-dev; \
 	) && \
 	( test $ARCH = armhf || proot-helper \
 	      apt-get install -y --no-install-recommends libxenomai-dev; ) && \
