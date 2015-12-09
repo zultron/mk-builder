@@ -31,7 +31,7 @@ Codename: jessie
 Architectures: amd64 i386 armhf source
 # List of distribution components
 Components: main
-# FIXME  Pull from old DA Buildbot
+# What to update
 Update: da-old @JESSIE_MANUAL_UPDATES@
 # Sign repo
 SignWith: @PACKAGE_SIGNING_KEY@

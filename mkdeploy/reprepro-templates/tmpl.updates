@@ -25,7 +25,7 @@ DownloadListsAs: .gz
 GetInRelease: no
 
 ####################################################
-#Machinekit deps from dxsbuild
+# Machinekit deps from dxsbuild
 #
 Name: da-mkdeps-jessie
 Method: http://buildbot.dovetail-automata.com/mkdeps-repo
@@ -45,3 +45,22 @@ VerifyRelease: blindtrust
 DownloadListsAs: .gz
 GetInRelease: no
 
+####################################################
+# Jessie RT_PREEMPT kernel from backports snapshot
+#
+Name: jessie-linux-rt
+Method: http://snapshot.debian.org/archive/debian/20150908T034355Z
+Suite: jessie-backports
+Components: main
+Architectures: amd64 i386 source
+VerifyRelease: blindtrust
+DownloadListsAs: .gz
+GetInRelease: no
+FilterFormula:
+  package (== linux-headers-4.1.0-0.bpo.1-common-rt) |
+  package (== linux-headers-4.1.0-0.bpo.1-rt-amd64) | package (== linux-headers-4.1.0-0.bpo.1-rt-686-pae) |
+  package (== linux-image-4.1.0-0.bpo.1-rt-amd64) | package (== linux-image-4.1.0-0.bpo.1-rt-686-pae) |
+  package (== linux-image-4.1.0-0.bpo.1-rt-amd64-dbg) | package (== linux-image-4.1.0-0.bpo.1-rt-686-pae-dbg) |
+  package (== linux-headers-rt-amd64) | package (== linux-headers-rt-686-pae) |
+  package (== linux-image-rt-amd64) | package (== linux-image-rt-686-pae) |
+  package (== linux-image-rt-amd64-dbg) | package (== linux-image-rt-686-pae-dbg)
