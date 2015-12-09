@@ -38,9 +38,6 @@ ADD	bin/* ${ROOTFS}/usr/bin/
 ENV SUITE jessie
 ENV ARCH amd64
 
-# FIXME testing
-RUN	env
-
 # install native cross-compiler if armhf arch
 ADD	http://emdebian.org/tools/debian/emdebian-toolchain-archive.key /tmp/
 RUN	test $ARCH != armhf || ( \
