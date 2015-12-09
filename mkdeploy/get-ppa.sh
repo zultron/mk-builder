@@ -136,7 +136,7 @@ print_gpg_key() {
 
 lock() {
     # Lock
-    LOCKDIR=/tmp/get-ppa.lock
+    LOCKDIR=${REPODIR}/get-ppa.lock
     if ! mkdir $LOCKDIR 2>/dev/null; then
 	echo "$0 exiting:  lock directory exists: '${LOCKDIR}'" >&2
 	exit 1
