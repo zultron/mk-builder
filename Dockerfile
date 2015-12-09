@@ -60,6 +60,7 @@ RUN     cd /opt && mkdir -p ${ROOTFS}/opt && \
         proot-helper /debootstrap/debootstrap --second-stage --verbose
 
 # configure apt
+	# official Debian repos
 RUN	sh -c 'echo "deb http://httpredir.debian.org/debian ${SUITE} main" \
 	    > ${ROOTFS}/etc/apt/sources.list' && \
 	sh -c 'echo "deb http://httpredir.debian.org/debian ${SUITE}-updates \
@@ -67,17 +68,45 @@ RUN	sh -c 'echo "deb http://httpredir.debian.org/debian ${SUITE} main" \
 	sh -c 'echo "deb http://security.debian.org ${SUITE}/updates main" \
 	    >> ${ROOTFS}/etc/apt/sources.list' && \
 	sh -c 'echo "deb http://httpredir.debian.org/debian ${SUITE}-backports \
- 	    main" >> ${ROOTFS}/etc/apt/sources.list' && \
-	proot-helper apt-get update 
+ 	    main" >> ${ROOTFS}/etc/apt/sources.list'
+	# 3rd-party MK deps repo
+RUN	proot-helper apt-key adv --keyserver hkp://keys.gnupg.net \
+	    --recv-key 73571BB9 && \
+	echo "deb http://builder2.zultron.com ${SUITE} main" \
+	     > ${ROOTFS}/etc/apt/sources.list.d/machinekit.list
+	# update apt db
+RUN	proot-helper apt-get update 
 
-# install dependencies
+# install debian development dependencies
+RUN	proot-helper apt-get update && \
+	proot-helper apt-get install -y --no-install-recommends \
+	    git \
+	    devscripts \
+	    fakeroot \
+	    equivs \
+	    lsb-release \
+	    less \
+	    python-debian
+
+# install MK dependencies
 ADD	mk_depends ${ROOTFS}/tmp/
-RUN	proot-helper install_deps ${SUITE} && \
+RUN	xargs -a /tmp/mk_depends proot-helper \
+	    apt-get install -y --no-install-recommends && \
+	( test $SUITE = wheezy \
+	    && ( \
+		proot-helper apt-get install -y -t wheezy-backports cython && \
+		proot-helper apt-get install -y --no-install-recommends \
+		    tcl8.5-dev tk8.5-dev; ) \
+	    || proot-helper apt-get install -y --no-install-recommends cython \
+	            tcl8.5-dev tk8.5-dev; \
+	) && \
+	( test $ARCH = armhf || proot-helper \
+	      apt-get install -y --no-install-recommends libxenomai-dev; ) && \
 	rm ${ROOTFS}/tmp/*
 
 # cleanup apt
 RUN	proot-helper apt-get clean
 
 # fix resolv.conf
-RUN	sh -c 'echo "nameserver 8.8.8.8" > ${ROOTFS}/etc/resolv.conf' && \
-	sh -c 'echo "nameserver 8.8.4.4" >>${ROOTFS}/etc/resolv.conf'
+RUN	echo "nameserver 8.8.8.8\nnameserver 8.8.4.4" \
+	    > ${ROOTFS}/etc/resolv.conf
