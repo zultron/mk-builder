@@ -39,12 +39,9 @@ ADD	proot-helper /bin/
 
 # install native cross-compiler if armhf arch
 ADD	http://emdebian.org/tools/debian/emdebian-toolchain-archive.key /tmp/
-RUN	test $ARCH != armhf || ( \
-	    apt-key add /tmp/emdebian-toolchain-archive.key && \
-	    echo "deb http://emdebian.org/tools/debian/ jessie main" >> \
-		/etc/apt/sources.list.d/emdebian.list && \
-	    dpkg --add-architecture ${ARCH} && \
-	    apt-get update && \
-	    apt-get install -y crossbuild-essential-${ARCH}; \
-	)
-
+RUN	apt-key add /tmp/emdebian-toolchain-archive.key && \
+	echo "deb http://emdebian.org/tools/debian/ jessie main" >> \
+	    /etc/apt/sources.list.d/emdebian.list && \
+	dpkg --add-architecture armhf && \
+	apt-get update && \
+	apt-get install -y crossbuild-essential-armhf
