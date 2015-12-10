@@ -100,7 +100,7 @@ RUN	test $SUITE = wheezy \
 	    && proot-helper apt-get install -y --no-install-recommends \
 		    tcl8.5-dev tk8.5-dev \
 	    || proot-helper apt-get install -y --no-install-recommends \
-	            tcl8.6-dev tk8.6-dev; \
+	            tcl8.6-dev tk8.6-dev
 
 # cleanup apt
 RUN	proot-helper apt-get clean
