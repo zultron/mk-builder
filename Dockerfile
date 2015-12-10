@@ -38,7 +38,7 @@ RUN	apt-get -y install \
 ADD	proot-helper /bin/
 
 
-ADD	bin/* ${ROOTFS}/usr/bin/
+ADD	bin/* ${ROOTFS}/usr/local/bin/
 
 ###########################################################################
 # Below here, build the chroot
