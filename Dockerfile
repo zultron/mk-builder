@@ -9,10 +9,10 @@ ENV ARCH  [arch]
 # [Leave surrounding comments to eliminate merge conflicts]
 #
 
-# build under /opt/rootfs
-RUN     mkdir -p /opt/rootfs && \
+# build under ${ROOTFS}
+RUN     mkdir -p ${ROOTFS} && \
         debootstrap --foreign --no-check-gpg --include=ca-certificates \
-            --arch=${ARCH} ${SUITE} /opt/rootfs http://httpredir.debian.org/debian
+            --arch=${ARCH} ${SUITE} ${ROOTFS} http://httpredir.debian.org/debian
 RUN	proot-helper /debootstrap/debootstrap --second-stage --verbose
 
 # configure apt
