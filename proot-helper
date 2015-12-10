@@ -6,4 +6,7 @@ test $ARCH = armhf \
 
 PROOT="proot -r $ROOTFS $QEMU_CMD"
 
+# Disable dpkg triggers starting services
+export RUNLEVEL=1
+
 exec $PROOT "$@"
