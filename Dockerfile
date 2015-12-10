@@ -38,8 +38,6 @@ RUN	apt-get -y install \
 ADD	proot-helper /bin/
 
 
-ADD	bin/* ${ROOTFS}/usr/local/bin/
-
 ###########################################################################
 # Below here, build the chroot
 
@@ -113,6 +111,9 @@ RUN	test $SUITE = wheezy \
 
 # cleanup apt
 RUN	proot-helper apt-get clean
+
+# copy arm-linux-gnueabihf-* last to clobber package installs
+ADD	bin/* ${ROOTFS}/usr/bin/
 
 # fix resolv.conf
 RUN	echo "nameserver 8.8.8.8\nnameserver 8.8.4.4" \
