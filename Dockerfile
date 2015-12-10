@@ -50,11 +50,11 @@ RUN	test $ARCH != armhf || ( \
 	        crossbuild-essential-${ARCH}; \
 	)
 
-# build under /opt
-RUN     cd /opt && mkdir -p ${ROOTFS}/opt && \
+# build under /opt/rootfs
+RUN     mkdir -p /opt/rootfs && \
         debootstrap --foreign --no-check-gpg --include=ca-certificates \
-            --arch=${ARCH} ${SUITE} rootfs http://httpredir.debian.org/debian && \
-        proot-helper /debootstrap/debootstrap --second-stage --verbose
+            --arch=${ARCH} ${SUITE} /opt/rootfs http://httpredir.debian.org/debian
+RUN	proot-helper /debootstrap/debootstrap --second-stage --verbose
 
 # configure apt
 	# official Debian repos
