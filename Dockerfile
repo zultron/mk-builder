@@ -47,6 +47,9 @@ ADD	bin/* ${ROOTFS}/usr/bin/
 # file to take as much advantage of Docker's caching as possible.
 ENV SUITE jessie
 ENV ARCH amd64
+#
+# [This space left to eliminate merge conflicts]
+#
 
 # install native cross-compiler if armhf arch
 ADD	http://emdebian.org/tools/debian/emdebian-toolchain-archive.key /tmp/
