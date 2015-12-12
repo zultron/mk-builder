@@ -14,6 +14,26 @@ ENV LANG C
 ADD http://emdebian.org/tools/debian/emdebian-toolchain-archive.key /tmp/
 ADD proot-helper /bin/
 
+# install required dependencies
+RUN	apt-get update && \
+	apt-get -y upgrade && \
+	apt-get -y install \
+	    debootstrap \
+	    proot \
+	    locales \
+	    rubygems \
+	    git \
+	    bzip2
+
+# add packagecloud cli and prune utility
+RUN	gem install package_cloud --no-rdoc --no-ri
+RUN	apt-get install -y python-restkit
+ADD	PackagecloudIo.py prune.py /usr/local/bin
+
+# patch debootstrap as /proc cannot be mounted under proot
+RUN	sed -i 's/in_target mount -t proc/#in_target mount -t proc/g' \
+	    /usr/share/debootstrap/functions
+
 # turn off recommends on container OS and proot OS
 # install native cross-compiler
 # install required dependencies
