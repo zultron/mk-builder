@@ -60,7 +60,7 @@ RUN test $SUITE = wheezy \
         || proot-helper apt-get install -y tcl8.6-dev tk8.6-dev
 
 # use gcc-4.7 for wheezy
-RUN test $SUITE = wheezy && proot-helper apt-get install -y gcc-4.7
+RUN test $SUITE = wheezy && proot-helper apt-get install -y gcc-4.7 || true
 
 # add ccache
 RUN proot-helper apt-get install -y ccache
@@ -73,12 +73,14 @@ ADD bin/* ${ROOTFS}/usr/local/bin/
 
 # use modified arm-linux-gnueabihf-* if running on wheezy
 RUN test $ARCH = armhf && test $SUITE = wheezy \
-        && cp ${ROOTFS}/usr/local/bin/* ${ROOTFS}/usr/bin/
+        && cp ${ROOTFS}/usr/local/bin/* ${ROOTFS}/usr/bin/ \
+        || true
 
 # else use native arm-linux-gnueabihf-* 
 RUN test $ARCH = armhf && test $SUITE = jessie \
         && proot-helper \
-            ln -sf /host-rootfs/usr/bin/arm-linux-gnueabihf-g{cc,++} /usr/bin/
+            ln -sf /host-rootfs/usr/bin/arm-linux-gnueabihf-g{cc,++} /usr/bin/ \
+        || true
 
 # fix resolv.conf
 RUN echo "nameserver 8.8.8.8\nnameserver 8.8.4.4" \
