@@ -34,8 +34,7 @@ RUN proot-helper apt-key adv --keyserver hkp://keys.gnupg.net \
 RUN proot-helper apt-get update 
 
 # install debian development dependencies
-RUN proot-helper apt-get update && \
-    proot-helper apt-get install -y \
+RUN proot-helper apt-get install -y \
         devscripts \
         equivs \
         fakeroot \

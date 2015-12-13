@@ -2,10 +2,15 @@ FROM debian:jessie
 MAINTAINER GP Orcullo <kinsamanka@gmail.com>
 
 ENV TERM dumb
-ENV ROOTFS=/opt/rootfs
+ENV ROOTFS /opt/rootfs
 
 # apt config:  silence warnings and set defaults
 ENV DEBIAN_FRONTEND noninteractive
+ENV DEBCONF_NONINTERACTIVE_SEEN true
+ENV LC_ALL C 
+ENV LANGUAGE C
+ENV LANG C
+
 # container OS
 RUN echo 'APT::Install-Recommends "0";\nAPT::Install-Suggests "0";' > \
             /etc/apt/apt.conf.d/01norecommend
@@ -16,17 +21,12 @@ RUN mkdir -p ${ROOTFS}/etc/apt/apt.conf.d && \
 
 # install required dependencies
 RUN apt-get update && \
-    apt-get -y upgrade && \
     apt-get -y install \
         debootstrap \
         proot \
         locales \
-        rubygems \
         git \
         bzip2
-
-# add packagecloud cli
-RUN gem install package_cloud --no-rdoc --no-ri
 
 # patch debootstrap as /proc cannot be mounted under proot
 RUN sed -i 's/in_target mount -t proc/#in_target mount -t proc/g' \
