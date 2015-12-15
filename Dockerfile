@@ -9,22 +9,16 @@ ENV ARCH  [arch]
 # [Leave surrounding comments to eliminate merge conflicts]
 #
 
-# build under ${ROOTFS}
-RUN mkdir -p ${ROOTFS} && \
-    debootstrap --foreign --no-check-gpg --include=ca-certificates \
-        --arch=${ARCH} ${SUITE} ${ROOTFS} http://httpredir.debian.org/debian
-RUN proot-helper /debootstrap/debootstrap --second-stage --verbose
+# create chroot
+ADD wheezy.conf jessie.conf /
+RUN multistrap -f /${SUITE}.conf -a ${ARCH} -d ${ROOTFS} && \
+    proot-helper /var/lib/dpkg/info/dash.preinst install && \
+    proot-helper dpkg --configure -a
 
-# configure apt
-# official Debian repos
-RUN sh -c 'echo "deb http://httpredir.debian.org/debian ${SUITE} main" \
-        > ${ROOTFS}/etc/apt/sources.list' && \
-    sh -c 'echo "deb http://httpredir.debian.org/debian ${SUITE}-updates \
-        main" >> ${ROOTFS}/etc/apt/sources.list' && \
-    sh -c 'echo "deb http://security.debian.org ${SUITE}/updates main" \
-        >> ${ROOTFS}/etc/apt/sources.list' && \
-    sh -c 'echo "deb http://httpredir.debian.org/debian ${SUITE}-backports \
-        main" >> ${ROOTFS}/etc/apt/sources.list'
+# fix resolv.conf
+RUN echo "nameserver 8.8.8.8\nnameserver 8.8.4.4" \
+        > ${ROOTFS}/etc/resolv.conf
+
 # 3rd-party MK deps repo
 RUN proot-helper apt-key adv --keyserver hkp://keys.gnupg.net \
         --recv-key 73571BB9 && \
@@ -32,16 +26,6 @@ RUN proot-helper apt-key adv --keyserver hkp://keys.gnupg.net \
          > ${ROOTFS}/etc/apt/sources.list.d/machinekit.list
 # update apt db
 RUN proot-helper apt-get update 
-
-# install debian development dependencies
-RUN proot-helper apt-get install -y \
-        devscripts \
-        equivs \
-        fakeroot \
-        git \
-        less \
-        lsb-release \
-        python-debian
 
 # install MK dependencies
 ADD mk_depends ${ROOTFS}/tmp/
@@ -59,14 +43,9 @@ RUN test $SUITE = wheezy \
         && proot-helper apt-get install -y tcl8.5-dev tk8.5-dev \
         || proot-helper apt-get install -y tcl8.6-dev tk8.6-dev
 
-# use gcc-4.7 for wheezy
-RUN test $SUITE = wheezy && proot-helper apt-get install -y gcc-4.7 || true
-
-# add ccache
-RUN proot-helper apt-get install -y ccache
-
 # cleanup apt
-RUN proot-helper apt-get clean
+RUN proot-helper apt-get clean && \
+    rm -f /var/lib/apt/lists/* ${ROOTFS}/var/lib/apt/lists/* || true
 
 # copy arm-linux-gnueabihf-* last to clobber package installs
 ADD bin/* ${ROOTFS}/usr/local/bin/
@@ -81,7 +60,3 @@ RUN test $ARCH = armhf && test $SUITE = jessie \
         && proot-helper \
             ln -sf /host-rootfs/usr/bin/arm-linux-gnueabihf-g{cc,++} /usr/bin/ \
         || true
-
-# fix resolv.conf
-RUN echo "nameserver 8.8.8.8\nnameserver 8.8.4.4" \
-        > ${ROOTFS}/etc/resolv.conf

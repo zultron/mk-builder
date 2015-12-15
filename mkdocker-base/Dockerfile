@@ -30,13 +30,9 @@ RUN apt-get update && \
     apt-get -y install \
         bzip2 \
         crossbuild-essential-armhf \
-        debootstrap \
+        multistrap \
         git \
         proot \
         qemu-user-static
 
 ADD proot-helper /bin/
-
-# patch debootstrap as /proc cannot be mounted under proot
-RUN sed -i 's/in_target mount -t proc/#in_target mount -t proc/g' \
-        /usr/share/debootstrap/functions
