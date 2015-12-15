@@ -22,7 +22,7 @@ RUN echo "nameserver 8.8.8.8\nnameserver 8.8.4.4" \
 # 3rd-party MK deps repo
 RUN proot-helper apt-key adv --keyserver hkp://keys.gnupg.net \
         --recv-key 73571BB9 && \
-    echo "deb http://builder2.zultron.com ${SUITE} main" \
+    echo "deb http://deb.dovetail-automata.com ${SUITE} main" \
          > ${ROOTFS}/etc/apt/sources.list.d/machinekit.list
 # update apt db
 RUN proot-helper apt-get update 
