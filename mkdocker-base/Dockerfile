@@ -11,37 +11,32 @@ ENV LC_ALL C
 ENV LANGUAGE C
 ENV LANG C
 
-# container OS
+# turn off recommends on container OS and proot OS
 RUN echo 'APT::Install-Recommends "0";\nAPT::Install-Suggests "0";' > \
-            /etc/apt/apt.conf.d/01norecommend
-# proot OS
-RUN mkdir -p ${ROOTFS}/etc/apt/apt.conf.d && \
+            /etc/apt/apt.conf.d/01norecommend && \
+    mkdir -p ${ROOTFS}/etc/apt/apt.conf.d && \
     echo 'APT::Install-Recommends "0";\nAPT::Install-Suggests "0";' > \
             ${ROOTFS}/etc/apt/apt.conf.d/01norecommend
 
-# install required dependencies
-RUN apt-get update && \
-    apt-get -y install \
-        debootstrap \
-        proot \
-        locales \
-        git \
-        bzip2
-
-# patch debootstrap as /proc cannot be mounted under proot
-RUN sed -i 's/in_target mount -t proc/#in_target mount -t proc/g' \
-        /usr/share/debootstrap/functions
-
-# for qemu in proot
-RUN apt-get -y install \
-        qemu-user-static
-ADD proot-helper /bin/
-
-# install native cross-compiler if armhf arch
+# install native cross-compiler
 ADD http://emdebian.org/tools/debian/emdebian-toolchain-archive.key /tmp/
 RUN apt-key add /tmp/emdebian-toolchain-archive.key && \
     echo "deb http://emdebian.org/tools/debian/ jessie main" >> \
         /etc/apt/sources.list.d/emdebian.list && \
-    dpkg --add-architecture armhf && \
-    apt-get update && \
-    apt-get install -y crossbuild-essential-armhf
+    dpkg --add-architecture armhf
+
+# install required dependencies
+RUN apt-get update && \
+    apt-get -y install \
+        bzip2 \
+        crossbuild-essential-armhf \
+        debootstrap \
+        git \
+        proot \
+        qemu-user-static
+
+ADD proot-helper /bin/
+
+# patch debootstrap as /proc cannot be mounted under proot
+RUN sed -i 's/in_target mount -t proc/#in_target mount -t proc/g' \
+        /usr/share/debootstrap/functions
