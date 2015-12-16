@@ -9,11 +9,15 @@ ENV ARCH  [arch]
 # [Leave surrounding comments to eliminate merge conflicts]
 #
 
+ENV PROOT_OPTS "-b /dev/urandom"
+
 # create chroot
 ADD wheezy.conf jessie.conf /
 RUN multistrap -f /${SUITE}.conf -a ${ARCH} -d ${ROOTFS} && \
     proot-helper /var/lib/dpkg/info/dash.preinst install && \
     proot-helper dpkg --configure -a
+
+ENV PROOT_OPTS "-b /dev/pts -b /dev/shm -b /dev/urandom"
 
 # fix resolv.conf
 RUN echo "nameserver 8.8.8.8\nnameserver 8.8.4.4" \
