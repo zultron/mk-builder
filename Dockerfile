@@ -64,3 +64,6 @@ RUN test $ARCH = armhf && test $SUITE = jessie \
         && proot-helper \
             ln -sf /host-rootfs/usr/bin/arm-linux-gnueabihf-g{cc,++} /usr/bin/ \
         || true
+
+# update ccache symlinks
+RUN proot-helper dpkg-reconfigure ccache
