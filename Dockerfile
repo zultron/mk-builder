@@ -52,18 +52,24 @@ RUN proot-helper apt-get clean && \
     rm -f /var/lib/apt/lists/* ${ROOTFS}/var/lib/apt/lists/* || true
 
 # copy arm-linux-gnueabihf-* last to clobber package installs
-ADD bin/* ${ROOTFS}/usr/local/bin/
+ADD bin/* ${ROOTFS}/tmp/
 
 # use modified arm-linux-gnueabihf-* if running on wheezy
 RUN test $ARCH = armhf && test $SUITE = wheezy \
-        && cp ${ROOTFS}/usr/local/bin/* ${ROOTFS}/usr/bin/ \
+        && cp ${ROOTFS}/tmp/arm-* ${ROOTFS}/usr/bin/ \
         || true
 
 # else use native arm-linux-gnueabihf-* 
 RUN test $ARCH = armhf && test $SUITE = jessie \
-        && proot-helper \
-            ln -sf /host-rootfs/usr/bin/arm-linux-gnueabihf-g{cc,++} /usr/bin/ \
+        && proot-helper sh -c '\
+            for a in $(ls /host-rootfs/usr/bin/arm-linux-gnueabihf-*); \
+            do \
+                ln -sf $a /usr/bin; \
+            done' \
         || true
+
+# cleanup
+RUN rm ${ROOTFS}/tmp/*
 
 # update ccache symlinks
 RUN proot-helper dpkg-reconfigure ccache
