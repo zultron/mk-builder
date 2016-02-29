@@ -12,7 +12,7 @@ ENV ARCH  [arch]
 ENV PROOT_OPTS "-b /dev/urandom"
 
 # create chroot
-ADD wheezy.conf jessie.conf /
+ADD wheezy.conf jessie.conf raspbian.conf /
 RUN multistrap -f /${SUITE}.conf -a ${ARCH} -d ${ROOTFS} && \
     proot-helper /var/lib/dpkg/info/dash.preinst install && \
     proot-helper dpkg --configure -a
@@ -60,7 +60,7 @@ RUN test $ARCH = armhf && test $SUITE = wheezy \
         || true
 
 # else use native arm-linux-gnueabihf-* 
-RUN test $ARCH = armhf && test $SUITE = jessie \
+RUN test $ARCH = armhf && test $SUITE != wheezy \
         && proot-helper sh -c '\
             for a in $(ls /host-rootfs/usr/bin/arm-linux-gnueabihf-*); \
             do \
@@ -69,7 +69,7 @@ RUN test $ARCH = armhf && test $SUITE = jessie \
         || true
 
 # cleanup
-RUN rm ${ROOTFS}/tmp/*
+RUN rm ${ROOTFS}/tmp/* wheezy.conf jessie.conf raspbian.conf
 
 # update ccache symlinks
 RUN proot-helper dpkg-reconfigure ccache
