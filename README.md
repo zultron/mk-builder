@@ -1,4 +1,4 @@
-# MkDocker:  Build Machinekit in Docker on Travis CI
+# mk-builder:  Build Machinekit in Docker on Travis CI
 
 The [Machinekit project][1] targets Debian Wheezy and Jessie, running
 on `amd64`, `i386` and `armhf` architectures.  These Dockerfiles build

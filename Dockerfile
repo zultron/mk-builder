@@ -1,4 +1,4 @@
-FROM kinsamanka/machinekit_builder:base
+FROM machinekit/mk-builder:base
 MAINTAINER GP Orcullo <kinsamanka@gmail.com>
 #
 # These variables configure the build.
