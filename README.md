@@ -1,12 +1,12 @@
-| mk-builder:base | [![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=base)](https://travis-ci.org/machinekit/machinekit)
+| mk-builder:base | [![Build Status](https://travis-ci.org/machinekit/mk-builder.svg?branch=base)](https://travis-ci.org/machinekit/mk-builder)
 |--:|:--|
-| mk-builder:wheezy-64 | ![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=wheezy-)
-| mk-builder:wheezy-32 | ![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=wheezy-)
-| mk-builder:wheezy-armhf | ![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=wheezy-)
-| mk-builder:jessie-64 | ![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=jessie-)
-| mk-builder:jessie-32 | ![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=jessie-)
-| mk-builder:jessie-armhf | ![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=jessie-)
-| mk-builder:raspbian-armhf | ![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=raspbian-)
+| mk-builder:wheezy-64 | [![Build Status](https://travis-ci.org/machinekit/mk-builder.svg?branch=wheezy-64)](https://travis-ci.org/machinekit/mk-builder)
+| mk-builder:wheezy-32 | [![Build Status](https://travis-ci.org/machinekit/mk-builder.svg?branch=wheezy-32)](https://travis-ci.org/machinekit/mk-builder)
+| mk-builder:wheezy-armhf | [![Build Status](https://travis-ci.org/machinekit/mk-builder.svg?branch=wheezy-armhf)](https://travis-ci.org/machinekit/mk-builder)
+| mk-builder:jessie-64 | [![Build Status](https://travis-ci.org/machinekit/mk-builder.svg?branch=jessie-64)](https://travis-ci.org/machinekit/mk-builder)
+| mk-builder:jessie-32 | [![Build Status](https://travis-ci.org/machinekit/mk-builder.svg?branch=jessie-32)](https://travis-ci.org/machinekit/mk-builder)
+| mk-builder:jessie-armhf | [![Build Status](https://travis-ci.org/machinekit/mk-builder.svg?branch=jessie-armhf)](https://travis-ci.org/machinekit/mk-builder)
+| mk-builder:raspbian-armhf | [![Build Status](https://travis-ci.org/machinekit/mk-builder.svg?branch=raspbian-armhf)](https://travis-ci.org/machinekit/mk-builder)
 
 # mk-builder:  Build Machinekit in Docker on Travis CI
 
