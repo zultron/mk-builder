@@ -21,11 +21,10 @@ env:
 
 script:
   - test $DOCKER_TAG = base
-      && docker build -t $DOCKER_REPO:${DOCKER_TAG}_${COMMIT} mkdocker-base
-      || docker build -t $DOCKER_REPO:${DOCKER_TAG}_${COMMIT} .
+      && docker build -t $DOCKER_REPO:${DOCKER_TAG} mkdocker-base
+      || docker build -t $DOCKER_REPO:${DOCKER_TAG} .
 
 after_success:
   - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-  - docker tag $DOCKER_REPO:${DOCKER_TAG}_${COMMIT} $DOCKER_REPO:${DOCKER_TAG}
-  - docker tag $DOCKER_REPO:${DOCKER_TAG} $DOCKER_REPO:travis-$TRAVIS_JOB_NUMBER
+  - docker tag $DOCKER_REPO:${DOCKER_TAG} $DOCKER_REPO:${DOCKER_TAG}_${COMMIT}-$TRAVIS_JOB_NUMBER 
   - docker push $DOCKER_REPO
