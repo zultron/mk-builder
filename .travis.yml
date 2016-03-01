@@ -26,5 +26,8 @@ script:
 
 after_success:
   - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-  - docker tag $DOCKER_REPO:${DOCKER_TAG} $DOCKER_REPO:${DOCKER_TAG}_${COMMIT}-$TRAVIS_JOB_NUMBER 
-  - docker push $DOCKER_REPO
+  - docker tag $DOCKER_REPO:${DOCKER_TAG} 
+        $DOCKER_REPO:${DOCKER_TAG}_${COMMIT}-$TRAVIS_JOB_NUMBER 
+  - for i in {1..24}; do
+        docker push $DOCKER_REPO && break || sleep 60;
+    done
