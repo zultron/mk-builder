@@ -1,3 +1,13 @@
+| mk-builder:base | [![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=base)](https://travis-ci.org/machinekit/machinekit)
+|--:|:--|
+| mk-builder:wheezy-64 | ![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=wheezy-)
+| mk-builder:wheezy-32 | ![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=wheezy-)
+| mk-builder:wheezy-armhf | ![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=wheezy-)
+| mk-builder:jessie-64 | ![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=jessie-)
+| mk-builder:jessie-32 | ![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=jessie-)
+| mk-builder:jessie-armhf | ![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=jessie-)
+| mk-builder:raspbian-armhf | ![Build Status](https://travis-ci.org/machinekit/machinekit.svg?branch=raspbian-)
+
 # mk-builder:  Build Machinekit in Docker on Travis CI
 
 The [Machinekit project][1] targets Debian Wheezy and Jessie, running
@@ -36,10 +46,10 @@ commit setting the `$SUITE` and `$ARCH` variables in the top-level
 changes.
 
 For example, if you rebuild the base image tagged as
-`jdoe/machinekit_builder:base`, rebuild the final images as follows:
+`jdoe/mk-builder:base`, rebuild the final images as follows:
 
 	$ git checkout base  # always edit the 'base' branch
-	$ $EDITOR Dockerfile # change top line-> 'FROM jdoe/machinekit_builder:base'
+	$ $EDITOR Dockerfile # change top line-> 'FROM jdoe/mk-builder:base'
 	$ git commit Dockerfile -m 'set base image'
 	$ ./do-rebase.sh     # Warning!  Dangerous!
 
@@ -56,7 +66,7 @@ labeled `set build to SUITE-ARCH`.
 After this, build the container.  Build locally:
 
 	$ git checkout jessie-64  # adjust branch as needed
-	$ docker build -t jdoe/machinekit_builder:$(git rev-parse --abbrev-ref HEAD) .
+	$ docker build -t jdoe/mk-builder:$(git rev-parse --abbrev-ref HEAD) .
 
 Or build on the [Docker Registry][3] from your GitHub repo; push your
 changes as follows and configure the build from the registry web
