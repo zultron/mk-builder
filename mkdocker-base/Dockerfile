@@ -11,22 +11,22 @@ ENV LC_ALL C
 ENV LANGUAGE C
 ENV LANG C
 
+ADD http://emdebian.org/tools/debian/emdebian-toolchain-archive.key /tmp/
+ADD proot-helper /bin/
+
 # turn off recommends on container OS and proot OS
+# install native cross-compiler
+# install required dependencies
 RUN echo 'APT::Install-Recommends "0";\nAPT::Install-Suggests "0";' > \
             /etc/apt/apt.conf.d/01norecommend && \
     mkdir -p ${ROOTFS}/etc/apt/apt.conf.d && \
     echo 'APT::Install-Recommends "0";\nAPT::Install-Suggests "0";' > \
-            ${ROOTFS}/etc/apt/apt.conf.d/01norecommend
-
-# install native cross-compiler
-ADD http://emdebian.org/tools/debian/emdebian-toolchain-archive.key /tmp/
-RUN apt-key add /tmp/emdebian-toolchain-archive.key && \
+            ${ROOTFS}/etc/apt/apt.conf.d/01norecommend && \
+    apt-key add /tmp/emdebian-toolchain-archive.key && \
     echo "deb http://emdebian.org/tools/debian/ jessie main" >> \
         /etc/apt/sources.list.d/emdebian.list && \
-    dpkg --add-architecture armhf
-
-# install required dependencies
-RUN apt-get update && \
+    dpkg --add-architecture armhf && \
+    apt-get update && \
     apt-get -y install \
         bzip2 \
         crossbuild-essential-armhf \
@@ -34,5 +34,3 @@ RUN apt-get update && \
         git \
         proot \
         qemu-user-static
-
-ADD proot-helper /bin/
