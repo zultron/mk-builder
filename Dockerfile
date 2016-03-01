@@ -40,7 +40,7 @@ RUN echo "nameserver 8.8.8.8\nnameserver 8.8.4.4" \
         > ${ROOTFS}/etc/resolv.conf && \
     proot-helper apt-key adv --keyserver hkp://keys.gnupg.net \
         --recv-key 43DDF224 && \
-    echo "deb http://deb.mah.priv.at/debian ${SUITE} main" \
+    echo "deb http://deb.machinekit.io/debian ${SUITE} main" \
          > ${ROOTFS}/etc/apt/sources.list.d/machinekit.list && \
     proot-helper apt-get update && \
     proot-helper xargs -a /tmp/mk_depends apt-get install -y && \
