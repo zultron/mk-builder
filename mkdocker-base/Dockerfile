@@ -33,4 +33,6 @@ RUN echo 'APT::Install-Recommends "0";\nAPT::Install-Suggests "0";' > \
         multistrap \
         git \
         proot \
-        qemu-user-static
+        qemu-user-static \
+        ca-certificates \
+        wget
