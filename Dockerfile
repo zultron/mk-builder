@@ -39,31 +39,31 @@ ADD bin/* ${ROOTFS}/tmp/
 # update ccache symlinks
 
 RUN echo "nameserver 8.8.8.8\nnameserver 8.8.4.4" \
-        > ${ROOTFS}/etc/resolv.conf && \
-    proot-helper apt-key adv --keyserver hkp://keys.gnupg.net \
-        --recv-key 43DDF224 && \
-    echo "deb http://deb.machinekit.io/debian ${SUITE} main" \
-         > ${ROOTFS}/etc/apt/sources.list.d/machinekit.list && \
-    proot-helper apt-get update && \
-    proot-helper xargs -a /tmp/mk_depends apt-get install -y && \
-    rm ${ROOTFS}/tmp/mk_depends && \
-    (test $SUITE = wheezy \
+        > ${ROOTFS}/etc/resolv.conf
+RUN proot-helper apt-key adv --keyserver hkp://keys.gnupg.net \
+        --recv-key 43DDF224
+RUN echo "deb http://deb.machinekit.io/debian ${SUITE} main" \
+         > ${ROOTFS}/etc/apt/sources.list.d/machinekit.list
+RUN proot-helper apt-get update
+RUN proot-helper xargs -a /tmp/mk_depends apt-get install -y
+RUN rm ${ROOTFS}/tmp/mk_depends
+RUN (test $SUITE = wheezy \
         && proot-helper apt-get install -y -t wheezy-backports cython \
-        || proot-helper apt-get install -y cython) && \
-    (test $SUITE = wheezy \
+        || proot-helper apt-get install -y cython)
+RUN (test $SUITE = wheezy \
         && proot-helper apt-get install -y tcl8.5-dev tk8.5-dev \
-        || proot-helper apt-get install -y tcl8.6-dev tk8.6-dev) && \
-    proot-helper apt-get clean && \
-    (rm -f /var/lib/apt/lists/* ${ROOTFS}/var/lib/apt/lists/* || true) && \
-    (test $ARCH = armhf && test $SUITE = wheezy \
+        || proot-helper apt-get install -y tcl8.6-dev tk8.6-dev)
+RUN proot-helper apt-get clean
+RUN (rm -f /var/lib/apt/lists/* ${ROOTFS}/var/lib/apt/lists/* || true)
+RUN (test $ARCH = armhf && test $SUITE = wheezy \
         && cp ${ROOTFS}/tmp/arm-* ${ROOTFS}/usr/bin/ \
-        || true) && \
-    (test $ARCH = armhf && test $SUITE != wheezy \
+        || true)
+RUN (test $ARCH = armhf && test $SUITE != wheezy \
         && proot-helper sh -c '\
             for a in $(ls /host-rootfs/usr/bin/arm-linux-gnueabihf-*); \
             do \
                 ln -sf $a /usr/bin; \
             done' \
-        || true) && \
-    rm ${ROOTFS}/tmp/* wheezy.conf jessie.conf raspbian.conf && \
-    proot-helper dpkg-reconfigure ccache
+        || true)
+RUN rm ${ROOTFS}/tmp/* wheezy.conf jessie.conf raspbian.conf
+RUN proot-helper dpkg-reconfigure ccache
