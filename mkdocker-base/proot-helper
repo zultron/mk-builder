@@ -9,6 +9,10 @@ PROOT="proot $PROOT_OPTS -r $ROOTFS $QEMU_CMD"
 # Disable dpkg triggers starting services
 export RUNLEVEL=1
 
+# proot error: ptrace(TRACEME): Operation not permitted
+# https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1202161
+export PROOT_NO_SECCOMP=1
+
 # Be sure ccache is in path
 PATH=/usr/lib/ccache:/usr/sbin:/usr/bin:/sbin:/bin
 

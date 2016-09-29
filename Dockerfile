@@ -13,9 +13,11 @@ ENV PROOT_OPTS "-b /dev/urandom"
 
 # create chroot
 ADD wheezy.conf jessie.conf raspbian.conf /
-RUN multistrap -f /${SUITE}.conf -a ${ARCH} -d ${ROOTFS} && \
-    proot-helper /var/lib/dpkg/info/dash.preinst install && \
-    proot-helper dpkg --configure -a
+RUN multistrap -f /${SUITE}.conf -a ${ARCH} -d ${ROOTFS}
+RUN cat /proc/sys/kernel/yama/ptrace_scope
+RUN echo 0 > /proc/sys/kernel/yama/ptrace_scope
+RUN proot-helper /var/lib/dpkg/info/dash.preinst install
+RUN proot-helper dpkg --configure -a
 
 ENV PROOT_OPTS "-b /dev/pts -b /dev/shm -b /dev/urandom"
 
