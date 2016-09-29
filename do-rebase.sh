@@ -15,7 +15,7 @@ fi
 doit() {
     set -x  # Show user what we're doing
 
-    for branch in jessie-64 jessie-32 jessie-armhf raspbian-armhf \
+    for branch in jessie-64 jessie-32 jessie-armhf \
 	wheezy-64 wheezy-32 wheezy-armhf; do
 
 	git checkout $branch
