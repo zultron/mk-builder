@@ -68,12 +68,14 @@ After this, build the container.  Build locally:
 	$ git checkout jessie-64  # adjust branch as needed
 	$ docker build -t jdoe/mk-builder:$(git rev-parse --abbrev-ref HEAD) .
 
-Or build on the [Docker Registry][3] from your GitHub repo; push your
-changes as follows and configure the build from the registry web
-interface:
+Or build on the [Docker Registry][3] from your GitHub repo.  Create
+the Docker Hub repo and create an automated build.  Update the build
+settings with the branch names, e.g. `jessie-64`, or all Jessie builds
+with`/^jessie-.*$/`.  Enable the Docker webhook on the GitHub repo to
+notify the hub of changes.  Then push your changes as follows to
+trigger an automatic build:
 
 	$ git push --all -f  # DANGEROUS force-push all branches
-
 
 [1]: http://machinekit.io
 [2]: http://proot.me/
